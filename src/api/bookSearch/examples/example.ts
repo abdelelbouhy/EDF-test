@@ -1,4 +1,4 @@
-import { BookSearchClient } from '../api/bookSearch';
+import { BookSearchClient } from '../bookSearchClient';
 
 export const getBooksByAuthor = async (
   author: string,
@@ -11,7 +11,8 @@ export const getBooksByAuthor = async (
       limit: 10,
       format: 'json'
     },
-    joinKeyNames
+    joinKeyNames,
+    joinKeyNames ? '.' : ''
   );
 
   console.log(await book.getBooksByAuthor());
@@ -38,7 +39,9 @@ export const getBooksXml = async () => {
     that will call the example file funtions
 */
 
-getBooksByAuthor('Shakespear', true);
-getBooksByAuthor('Shakespear');
-getBooksByAuthor('Ben');
-getBooksXml();
+export const runExamples = () => {
+  getBooksByAuthor('Shakespear', true);
+  getBooksByAuthor('Shakespear');
+  getBooksByAuthor('Ben');
+  getBooksXml();
+};

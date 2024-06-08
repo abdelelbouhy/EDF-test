@@ -1,3 +1,4 @@
 export * from './bookSearchClient';
-export * from './bookSearchClient.interfaces';
-export * from './test.data';
+export * from './interfaces';
+export * from './dataFactories';
+export * from './examples';

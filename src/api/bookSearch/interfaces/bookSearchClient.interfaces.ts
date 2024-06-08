@@ -1,6 +1,9 @@
 export interface ConstructorParams {
-  format: string;
-  limit: number;
+  [name: string]: string | number;
+}
+
+export interface Book {
+  [name: string]: any;
 }
 
 interface BookDetails {
@@ -27,8 +30,4 @@ export interface BookParseResponse {
   bookPrice: number;
 }
 
-export type BookValue = BookDetails | Stock;
-
-export type Book = {
-  [name: string]: unknown;
-};
+export interface BookValue extends BookDetails, Stock {}

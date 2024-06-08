@@ -41,7 +41,8 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "coverageReporters": ["html"]
   },
   "dependencies": {
     "axios": "^1.7.2",

@@ -1,4 +1,4 @@
-import { BookParseResponse, BookResponse } from '.';
+import { BookParseResponse, BookResponse } from '..';
 
 const testDataFactory = (author: string): BookResponse[] => {
   return Array(2)
@@ -28,6 +28,18 @@ const resultDataFactory = (author: string): BookParseResponse[] => {
     }));
 };
 
+const resultJoinedDataFactory = (author: string): any => {
+  return Array(2)
+    .fill(null)
+    .map((_elm, idx) => ({
+      'book.bookTitle': `bookTitle_${idx + 1}`,
+      'book.bookAuthor': author,
+      'book.isbn': `isbn_${idx + 1}`,
+      'stock.bookQuantity': (idx + 1) * 10,
+      'stock.bookPrice': (idx + 1) * 20
+    }));
+};
+
 export const jsonTestData = {
   shakespear: JSON.stringify(testDataFactory('shakespear')),
   ben: JSON.stringify(testDataFactory('Ben'))
@@ -35,24 +47,24 @@ export const jsonTestData = {
 
 export const shakespearResult = resultDataFactory('shakespear');
 
-export const shakespearJoindKeysResult = [
-  {
-    'book.bookAuthor': 'shakespear',
-    'book.bookTitle': 'bookTitle_1',
-    'book.isbn': 'isbn_1',
-    'stock.bookPrice': 20,
-    'stock.bookQuantity': 10
-  },
-  {
-    'book.bookAuthor': 'shakespear',
-    'book.bookTitle': 'bookTitle_2',
-    'book.isbn': 'isbn_2',
-    'stock.bookPrice': 40,
-    'stock.bookQuantity': 20
-  }
-];
+export const joindKeysResult = resultJoinedDataFactory('shakespear');
 
-export const benResult = resultDataFactory('Ben');
+export const nestedXmlJoindResult = resultJoinedDataFactory('Ben').map(
+  (obj: any, index: number) => {
+    const idx = 0;
+    const count = idx + 1;
+    delete obj['stock.bookPrice'];
+    delete obj['stock.bookQuantity'];
+
+    return {
+      ...obj,
+      'book.bookPrice': (index + 1) * 20,
+      'book.bookQuantity': (index + 1) * 10,
+      [`book.nest.level_${count}`]: `level_${count}`,
+      [`book.nest.level_${count + 1}`]: `level_${count + 1}`
+    };
+  }
+);
 
 export const xmlTestData = `<?xml version="1.0" encoding="UTF-8"?>
           <books>
@@ -101,7 +113,7 @@ export const nestedXmlTestData = `<?xml version="1.0" encoding="UTF-8"?>
           </book>
         </books>
 `;
-export const nestedXmlResult = resultDataFactory('Ben').map((obj) => {
+export const nestedXmlResult = resultDataFactory('Ben').map((obj, index) => {
   const idx = 0;
   const count = idx + 1;
 

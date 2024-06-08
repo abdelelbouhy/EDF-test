@@ -1,8 +1,7 @@
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';
-import { jsonTestData, xmlTestData } from './api/bookSearch';
-import { getBooksByAuthor, getBooksXml } from './examples';
+import { jsonTestData, runExamples, xmlTestData } from './api/bookSearch';
 
 const PORT = 3000;
 
@@ -31,7 +30,6 @@ app.get('/by-author', (req, res) => {
   res.send(JSON.stringify(response));
 });
 
-// Another enpoint that mimc new api endpoints when added
 app.get('/get-xml', (req, res) => {
   const {
     query: { author }
@@ -48,9 +46,7 @@ app.listen(PORT, async () => {
   console.log('----------------------------------------');
   console.log('Calling examples scripts');
 
-  getBooksByAuthor('Shakespear');
-  getBooksByAuthor('Ben');
-  getBooksXml();
+  runExamples();
 
   console.log('Examples scripts done');
   console.log('----------------------------------------');
