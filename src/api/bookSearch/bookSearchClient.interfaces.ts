@@ -1,30 +1,34 @@
 export interface ConstructorParams {
-  format: string | undefined;
+  format: string;
   limit: number;
 }
 
-interface Book {
-  title: string;
-  author: string;
+interface BookDetails {
+  bookTitle: string;
+  bookAuthor: string;
   isbn: string;
 }
 
 interface Stock {
-  quantity: number;
-  price: number;
+  bookQuantity: number;
+  bookPrice: number;
 }
 
 export interface BookResponse {
-  book: Book;
+  book: BookDetails;
   stock: Stock;
 }
 
 export interface BookParseResponse {
-  title: string;
-  author: string;
+  bookTitle: string;
+  bookAuthor: string;
   isbn: string;
-  quantity: number;
-  price: number;
+  bookQuantity: number;
+  bookPrice: number;
 }
 
-export type BookValue = Book | Stock;
+export type BookValue = BookDetails | Stock;
+
+export type Book = {
+  [name: string]: unknown;
+};

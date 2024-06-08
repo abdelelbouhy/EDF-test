@@ -1,146 +1,113 @@
+import { BookParseResponse, BookResponse } from '.';
+
+const testDataFactory = (author: string): BookResponse[] => {
+  return Array(2)
+    .fill(null)
+    .map((_elm, idx) => ({
+      book: {
+        bookTitle: `bookTitle_${idx + 1}`,
+        bookAuthor: author,
+        isbn: `isbn_${idx + 1}`
+      },
+      stock: {
+        bookQuantity: (idx + 1) * 10,
+        bookPrice: (idx + 1) * 20
+      }
+    }));
+};
+
+const resultDataFactory = (author: string): BookParseResponse[] => {
+  return Array(2)
+    .fill(null)
+    .map((_elm, idx) => ({
+      bookTitle: `bookTitle_${idx + 1}`,
+      bookAuthor: author,
+      isbn: `isbn_${idx + 1}`,
+      bookQuantity: (idx + 1) * 10,
+      bookPrice: (idx + 1) * 20
+    }));
+};
+
 export const jsonTestData = {
-  data: JSON.stringify([
-    {
-      book: {
-        title: 'title',
-        author: 'Ben',
-        isbn: 'isbn'
-      },
-      stock: {
-        quantity: 10,
-        price: 20.1
-      }
-    },
-    {
-      book: {
-        title: 'title_2',
-        author: 'Ben',
-        isbn: 'isbn_2'
-      },
-      stock: {
-        quantity: 100,
-        price: 202.1
-      }
-    }
-  ])
+  shakespear: JSON.stringify(testDataFactory('shakespear')),
+  ben: JSON.stringify(testDataFactory('Ben'))
 };
 
-export const jsonResult = [
-  {
-    title: 'title',
-    author: 'Ben',
-    isbn: 'isbn',
-    quantity: 10,
-    price: 20.1
-  },
-  {
-    title: 'title_2',
-    author: 'Ben',
-    isbn: 'isbn_2',
-    quantity: 100,
-    price: 202.1
-  }
-];
+export const shakespearResult = resultDataFactory('shakespear');
 
-export const jsonResultFullKeyNames = [
+export const shakespearJoindKeysResult = [
   {
-    'book.title': 'title',
-    'book.author': 'Ben',
-    'book.isbn': 'isbn',
-    'stock.quantity': 10,
-    'stock.price': 20.1
+    'book.bookAuthor': 'shakespear',
+    'book.bookTitle': 'bookTitle_1',
+    'book.isbn': 'isbn_1',
+    'stock.bookPrice': 20,
+    'stock.bookQuantity': 10
   },
   {
-    'book.title': 'title_2',
-    'book.author': 'Ben',
+    'book.bookAuthor': 'shakespear',
+    'book.bookTitle': 'bookTitle_2',
     'book.isbn': 'isbn_2',
-    'stock.quantity': 100,
-    'stock.price': 202.1
+    'stock.bookPrice': 40,
+    'stock.bookQuantity': 20
   }
 ];
 
-export const jsonNewSellerTestData = {
-  data: JSON.stringify([
-    {
-      book: {
-        bookTitle: 'title',
-        bookAuthor: 'Ben',
-        isbn: 'isbn',
-        releaseDate: '01/01/2010'
-      },
-      stock: {
-        bookQuantity: 10,
-        bookPrice: 20.1
-      }
-    },
-    {
-      book: {
-        bookTitle: 'title_2',
-        bookAuthor: 'Ben',
-        isbn: 'isbn_2',
-        releaseDate: '01/01/2020'
-      },
-      stock: {
-        bookQuantity: 100,
-        bookPrice: 202.1
-      }
-    }
-  ])
-};
+export const benResult = resultDataFactory('Ben');
 
-export const jsonNewSellerResult = [
-  {
-    bookTitle: 'title',
-    bookAuthor: 'Ben',
-    isbn: 'isbn',
-    bookQuantity: 10,
-    bookPrice: 20.1,
-    releaseDate: '01/01/2010'
-  },
-  {
-    bookTitle: 'title_2',
-    bookAuthor: 'Ben',
-    isbn: 'isbn_2',
-    bookQuantity: 100,
-    bookPrice: 202.1,
-    releaseDate: '01/01/2020'
-  }
-];
+export const xmlTestData = `<?xml version="1.0" encoding="UTF-8"?>
+          <books>
+            <book>
+              <bookTitle>bookTitle_1</bookTitle>
+              <isbn>isbn_1</isbn>
+              <bookAuthor>Ben</bookAuthor>
+              <bookQuantity>10</bookQuantity>
+              <bookPrice>20</bookPrice>
+            </book>
+            <book>
+              <bookTitle>bookTitle_2</bookTitle>
+              <isbn>isbn_2</isbn>
+              <bookAuthor>Ben</bookAuthor>
+              <bookQuantity>20</bookQuantity>
+              <bookPrice>40</bookPrice>
+          </book>
+        </books>
+`;
 
-export const xmlTestData = {
-  data: `<?xml version="1.0" encoding="UTF-8"?>
-            <books>
-                <book>
-                    <title>Title_xml</title>
-                    <isbn>isbn</isbn>
-                    <author>Ben</author>
-                    <quantity>50</quantity>
-                    <price>20.50</price>
-                </book>
-                <book>
-                    <title>Title_2</title>
-                    <isbn>isbn_2</isbn>
-                    <author>Ben</author>
-                    <quantity>100</quantity>
-                    <price>200.50</price>
-                </book>
-            </books>
-`
-};
+export const xmlResult = resultDataFactory('Ben');
 
-export const xmlResult = [
-  {
-    title: 'Title_xml',
-    isbn: 'isbn',
-    author: 'Ben',
-    quantity: '50',
-    price: '20.50'
-  },
-  {
-    title: 'Title_2',
-    isbn: 'isbn_2',
-    author: 'Ben',
-    quantity: '100',
-    price: '200.50'
-  }
-];
+export const nestedXmlTestData = `<?xml version="1.0" encoding="UTF-8"?>
+          <books>
+            <book>
+              <bookTitle>bookTitle_1</bookTitle>
+              <isbn>isbn_1</isbn>
+              <bookAuthor>Ben</bookAuthor>
+              <bookQuantity>10</bookQuantity>
+              <bookPrice>20</bookPrice>
+              <nest>
+                <level_1>level_1</level_1>
+                <level_2>level_2</level_2>
+              </nest>
+            </book>
+            <book>
+              <bookTitle>bookTitle_2</bookTitle>
+              <isbn>isbn_2</isbn>
+              <bookAuthor>Ben</bookAuthor>
+              <bookQuantity>20</bookQuantity>
+              <bookPrice>40</bookPrice>
+              <nest>
+                <level_1>level_1</level_1>
+                <level_2>level_2</level_2>
+              </nest>
+          </book>
+        </books>
+`;
+export const nestedXmlResult = resultDataFactory('Ben').map((obj) => {
+  const idx = 0;
+  const count = idx + 1;
+
+  return {
+    ...obj,
+    [`level_${count}`]: `level_${count}`,
+    [`level_${count + 1}`]: `level_${count + 1}`
+  };
+});

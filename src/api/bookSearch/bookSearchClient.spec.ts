@@ -2,12 +2,13 @@ import axios from 'axios';
 import {
   BookSearchClient,
   jsonTestData,
-  jsonResult,
-  jsonNewSellerResult,
-  jsonNewSellerTestData,
-  jsonResultFullKeyNames,
+  benResult,
+  shakespearJoindKeysResult,
   xmlTestData,
-  xmlResult
+  xmlResult,
+  nestedXmlTestData,
+  nestedXmlResult,
+  shakespearResult
 } from '.';
 
 jest.mock('axios');
@@ -18,9 +19,9 @@ describe('BookSearchClient for api.book-seller, author Shakespear and xml format
   let book: BookSearchClient;
 
   beforeAll(() => {
-    mockedAxios.get.mockResolvedValue(xmlTestData);
+    mockedAxios.get.mockResolvedValue({ data: xmlTestData });
     book = new BookSearchClient(
-      'http://api.book-seller-example.com/by-author?q=',
+      'http://api.book-seller-example.com/by-author?author=',
       'Shakespear',
       {
         limit: 10,
@@ -36,7 +37,7 @@ describe('BookSearchClient for api.book-seller, author Shakespear and xml format
 
   it('should test url is built with correct query string', () => {
     const url =
-      'http://api.book-seller-example.com/by-author?q=Shakespear&limit=10&format=xml';
+      'http://api.book-seller-example.com/by-author?author=Shakespear&limit=10&format=xml';
     const getSpy = jest.spyOn(mockedAxios, 'get');
     book.getBooksByAuthor();
 
@@ -57,13 +58,56 @@ describe('BookSearchClient for api.book-seller, author Shakespear and xml format
   });
 });
 
+describe('BookSearchClient for api.book-seller, author Shakespear and xml format (nested)', () => {
+  let book: BookSearchClient;
+
+  beforeAll(() => {
+    mockedAxios.get.mockResolvedValue({ data: nestedXmlTestData });
+    book = new BookSearchClient(
+      'http://api.book-seller-example.com/by-author?author=',
+      'Shakespear',
+      {
+        limit: 10,
+        format: 'xml'
+      },
+      false
+    );
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should test url is built with correct query string', () => {
+    const url =
+      'http://api.book-seller-example.com/by-author?author=Shakespear&limit=10&format=xml';
+    const getSpy = jest.spyOn(mockedAxios, 'get');
+    book.getBooksByAuthor();
+
+    expect(getSpy).toHaveBeenCalledWith(url);
+  });
+
+  it('should return correct numbers of calls', () => {
+    const getSpy = jest.spyOn(mockedAxios, 'get');
+    book.getBooksByAuthor();
+
+    expect(getSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('should return correct list of book ojects with correct properties list', async () => {
+    const result = await book.getBooksByAuthor();
+
+    expect(result).toEqual(nestedXmlResult);
+  });
+});
+
 describe('BookSearchClient for safari.online.books, author Ben and json format', () => {
   let book: BookSearchClient;
 
   beforeAll(() => {
-    mockedAxios.get.mockResolvedValue(jsonTestData);
+    mockedAxios.get.mockResolvedValue({ data: jsonTestData.shakespear });
     book = new BookSearchClient(
-      'http://safari.online.books.com/author?q=',
+      'http://safari.online.books.com/author?author=',
       'Ben',
       {
         limit: 100,
@@ -78,7 +122,8 @@ describe('BookSearchClient for safari.online.books, author Ben and json format',
   });
 
   it('should test url is built with correct query string', () => {
-    const url = 'http://safari.online.books.com/author?q=Ben&limit=100&format=json';
+    const url =
+      'http://safari.online.books.com/author?author=Ben&limit=100&format=json';
     const getSpy = jest.spyOn(mockedAxios, 'get');
     book.getBooksByAuthor();
 
@@ -88,18 +133,18 @@ describe('BookSearchClient for safari.online.books, author Ben and json format',
   it('should return correct list of book ojects with correct properties list', async () => {
     const result = await book.getBooksByAuthor();
 
-    expect(result).toEqual(jsonResult);
+    expect(result).toEqual(shakespearResult);
   });
 });
 
-describe('BookSearchClient for different.online.books, author John and json format', () => {
+describe('BookSearchClient for different.online.books, author ben and json format', () => {
   let book: BookSearchClient;
 
   beforeAll(() => {
-    mockedAxios.get.mockResolvedValue(jsonNewSellerTestData);
+    mockedAxios.get.mockResolvedValue({ data: jsonTestData.ben });
     book = new BookSearchClient(
-      'http://different.online.books.com/author?q=',
-      'John',
+      'http://different.online.books.com/author?author=',
+      'ben',
       {
         limit: 50,
         format: 'json'
@@ -114,7 +159,7 @@ describe('BookSearchClient for different.online.books, author John and json form
 
   it('should test url is built with correct query string', () => {
     const url =
-      'http://different.online.books.com/author?q=John&limit=50&format=json';
+      'http://different.online.books.com/author?author=ben&limit=50&format=json';
     const getSpy = jest.spyOn(mockedAxios, 'get');
     book.getBooksByAuthor();
 
@@ -124,7 +169,7 @@ describe('BookSearchClient for different.online.books, author John and json form
   it('should return correct list of book ojects with correct properties list from new seller', async () => {
     const result = await book.getBooksByAuthor();
 
-    expect(result).toEqual(jsonNewSellerResult);
+    expect(result).toEqual(benResult);
   });
 });
 
@@ -132,9 +177,9 @@ describe('BookSearchClient for api.book-seller, author Shakespear and xml format
   let book: BookSearchClient;
 
   beforeAll(() => {
-    mockedAxios.get.mockResolvedValue(jsonTestData);
+    mockedAxios.get.mockResolvedValue({ data: jsonTestData.shakespear });
     book = new BookSearchClient(
-      'http://api.book-seller-example.com/by-author?q=',
+      'http://api.book-seller-example.com/by-author?author=',
       'Shakespear',
       {
         limit: 10,
@@ -150,7 +195,7 @@ describe('BookSearchClient for api.book-seller, author Shakespear and xml format
 
   it('should test url is built with correct query string', () => {
     const url =
-      'http://api.book-seller-example.com/by-author?q=Shakespear&limit=10&format=json';
+      'http://api.book-seller-example.com/by-author?author=Shakespear&limit=10&format=json';
     const getSpy = jest.spyOn(mockedAxios, 'get');
     book.getBooksByAuthor();
 
@@ -159,36 +204,37 @@ describe('BookSearchClient for api.book-seller, author Shakespear and xml format
 });
 
 describe('BookSearchClient for safari.online.books, author Ben and json format with full path key names', () => {
-    let book: BookSearchClient;
-  
-    beforeAll(() => {
-      mockedAxios.get.mockResolvedValue(jsonTestData);
-      book = new BookSearchClient(
-        'http://safari.online.books.com/author?q=',
-        'Ben',
-        {
-          limit: 100,
-          format: 'json'
-        },
-        true
-      );
-    });
-  
-    afterEach(() => {
-      jest.clearAllMocks();
-    });
-  
-    it('should test url is built with correct query string', () => {
-      const url = 'http://safari.online.books.com/author?q=Ben&limit=100&format=json';
-      const getSpy = jest.spyOn(mockedAxios, 'get');
-      book.getBooksByAuthor();
-  
-      expect(getSpy).toHaveBeenCalledWith(url);
-    });
-  
-    it('should return correct list of book ojects with correct properties list', async () => {
-      const result = await book.getBooksByAuthor();
-  
-      expect(result).toEqual(jsonResultFullKeyNames);
-    });
+  let book: BookSearchClient;
+
+  beforeAll(() => {
+    mockedAxios.get.mockResolvedValue({ data: jsonTestData.shakespear });
+    book = new BookSearchClient(
+      'http://safari.online.books.com/author?author=',
+      'Ben',
+      {
+        limit: 100,
+        format: 'json'
+      },
+      true
+    );
   });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should test url is built with correct query string', () => {
+    const url =
+      'http://safari.online.books.com/author?author=Ben&limit=100&format=json';
+    const getSpy = jest.spyOn(mockedAxios, 'get');
+    book.getBooksByAuthor();
+
+    expect(getSpy).toHaveBeenCalledWith(url);
+  });
+
+  it('should return correct list of book ojects with correct properties list', async () => {
+    const result = await book.getBooksByAuthor();
+
+    expect(result).toEqual(shakespearJoindKeysResult);
+  });
+});
