@@ -1,7 +1,6 @@
 export interface ConstructorParams {
   format: string | undefined;
   limit: number;
-  createFullPathKeyName: boolean;
 }
 
 interface Book {

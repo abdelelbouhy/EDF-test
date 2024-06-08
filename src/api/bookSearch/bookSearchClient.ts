@@ -1,16 +1,17 @@
-import axios from "axios";
+import axios from 'axios';
 import {
   BookParseResponse,
   ConstructorParams,
   BookResponse,
-  BookValue,
-} from "./bookSearchClient.interfaces";
+  BookValue
+} from './bookSearchClient.interfaces';
 
-class BookSearchClient {
+export class BookSearchClient {
   constructor(
     private baseUrl: string,
     private authorName: string,
-    private params: ConstructorParams
+    private params: ConstructorParams,
+    private createFullPathKeyName: boolean
   ) {}
 
   private buildUrl = (): string => {
@@ -22,51 +23,41 @@ class BookSearchClient {
     return url;
   };
 
-  flattenBookResponse = (
+  private flattenBookResponse = (
     currentObject: BookResponse[] | BookParseResponse,
     newObject: BookValue | {},
     createFullPathKeyName: boolean,
-    keyName = ""
+    keyName = ''
   ) => {
     for (let key in currentObject) {
       let value = currentObject[key as keyof BookValue];
 
-      if (typeof value !== "object") {
+      if (typeof value !== 'object') {
         if (!createFullPathKeyName) {
           newObject[key as keyof BookValue] = value;
         } else {
-          if (keyName === "") {
+          if (keyName === '') {
             newObject[key as keyof BookValue] = value;
           } else {
-            if (key === "") {
+            if (key === '') {
               newObject[keyName as keyof BookValue] = value;
             } else {
-              newObject[(keyName + "." + key) as keyof BookValue] = value;
+              newObject[(keyName + '.' + key) as keyof BookValue] = value;
             }
           }
         }
       } else {
         if (!createFullPathKeyName) {
-          this.flattenBookResponse(
-            value,
-            newObject,
-            createFullPathKeyName,
-            key
-          );
+          this.flattenBookResponse(value, newObject, createFullPathKeyName, key);
         } else {
-          if (keyName === "" || keyName) {
-            this.flattenBookResponse(
-              value,
-              newObject,
-              createFullPathKeyName,
-              key
-            );
+          if (keyName === '' || keyName) {
+            this.flattenBookResponse(value, newObject, createFullPathKeyName, key);
           } else {
             this.flattenBookResponse(
               value,
               newObject,
               createFullPathKeyName,
-              keyName + "." + key
+              keyName + '.' + key
             );
           }
         }
@@ -80,11 +71,7 @@ class BookSearchClient {
     return json.map((item: BookParseResponse) => {
       const newObject = {};
 
-      this.flattenBookResponse(
-        item,
-        newObject,
-        this.params.createFullPathKeyName
-      );
+      this.flattenBookResponse(item, newObject, this.createFullPathKeyName);
 
       return newObject;
     });
@@ -99,16 +86,16 @@ class BookSearchClient {
       const { data } = await axios.get(url);
 
       if (data) {
-        if (this.params.format === "json") {
+        if (this.params.format === 'json') {
           return this.parseJson(data);
-        } else if (this.params.format === "xml") {
+        } else if (this.params.format === 'xml') {
           this.parseXml(data);
         }
       }
 
       return data;
     } catch (error) {
-      let message = "Unknown Error";
+      let message = 'Unknown Error';
       if (error instanceof Error) {
         message = error.message;
       }
@@ -117,15 +104,3 @@ class BookSearchClient {
     }
   };
 }
-
-const book = new BookSearchClient(
-  "http://api.book-seller-example.com/by-author?q=",
-  "Shakespear",
-  {
-    limit: 10,
-    format: "xml",
-    createFullPathKeyName: false,
-  }
-);
-
-book.getBooksByAuthor();

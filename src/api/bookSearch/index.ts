@@ -1,57 +1,58 @@
 import {
   BookParseResponse,
   BookResponse,
-  BookValue,
-} from "./api/bookSearch/bookSearchClient.interfaces";
+  BookValue
+} from './bookSearchClient.interfaces';
 
-// export * from "./bookSearchClient";
-// export * from "./bookSearchClient.interfaces";
+export * from './bookSearchClient';
+export * from './bookSearchClient.interfaces';
+export * from './test.data';
 
 const testObj = JSON.stringify([
   {
     book: {
-      title: "title",
-      author: "author",
-      isbn: "isbn",
+      title: 'title',
+      author: 'author',
+      isbn: 'isbn'
     },
     stock: {
       quantity: 10,
-      price: 20.1,
-    },
+      price: 20.1
+    }
   },
   {
     book: {
-      title: "title_2",
-      author: "author_2",
-      isbn: "isbn_2",
+      title: 'title_2',
+      author: 'author_2',
+      isbn: 'isbn_2'
     },
     stock: {
       quantity: 100,
-      price: 202.1,
-    },
-  },
+      price: 202.1
+    }
+  }
 ]);
 
 const flattenBookResponse = (
   currentObject: BookResponse[] | BookParseResponse,
   newObject: BookValue | {},
   createFullPathKeyName: boolean,
-  keyName = ""
+  keyName = ''
 ) => {
   for (let key in currentObject) {
     let value = currentObject[key as keyof BookValue];
 
-    if (typeof value !== "object") {
+    if (typeof value !== 'object') {
       if (!createFullPathKeyName) {
         newObject[key as keyof BookValue] = value;
       } else {
-        if (keyName === "") {
+        if (keyName === '') {
           newObject[key as keyof BookValue] = value;
         } else {
-          if (key === "") {
+          if (key === '') {
             newObject[keyName as keyof BookValue] = value;
           } else {
-            newObject[(keyName + "." + key) as keyof BookValue] = value;
+            newObject[(keyName + '.' + key) as keyof BookValue] = value;
           }
         }
       }
@@ -59,14 +60,14 @@ const flattenBookResponse = (
       if (!createFullPathKeyName) {
         flattenBookResponse(value, newObject, createFullPathKeyName, key);
       } else {
-        if (keyName === "" || keyName) {
+        if (keyName === '' || keyName) {
           flattenBookResponse(value, newObject, createFullPathKeyName, key);
         } else {
           flattenBookResponse(
             value,
             newObject,
             createFullPathKeyName,
-            keyName + "." + key
+            keyName + '.' + key
           );
         }
       }
@@ -91,4 +92,4 @@ const parseJson = (
 
 const test = parseJson(testObj, false);
 
-console.log(test);
+// console.log(test);
