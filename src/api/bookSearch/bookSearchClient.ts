@@ -1,10 +1,15 @@
 import axios from 'axios';
+import { parseStringPromise } from 'xml2js';
 import {
   BookParseResponse,
   ConstructorParams,
   BookResponse,
   BookValue
 } from './bookSearchClient.interfaces';
+
+// type Dictionary = {
+//   [key: string]: unknown;
+// }
 
 export class BookSearchClient {
   constructor(
@@ -77,9 +82,21 @@ export class BookSearchClient {
     });
   };
 
-  private parseXml = (data: string) => {};
+  private parseXml = async (data: string) => {
+    const xmlDoc = await parseStringPromise(data);
+    const books: any = Object.values(Object.values(xmlDoc)[0] as any)[0];
 
-  public getBooksByAuthor = async (): Promise<BookParseResponse[] | string> => {
+    return books.map((book: any) => {
+      const result: any = {};
+      for (let key in book) {
+        result[key] = book[key][0];
+      }
+
+      return result;
+    });
+  };
+
+  public getBooksByAuthor = async (): Promise<BookParseResponse[] | null | Error> => {
     const url = this.buildUrl();
 
     try {
@@ -89,11 +106,11 @@ export class BookSearchClient {
         if (this.params.format === 'json') {
           return this.parseJson(data);
         } else if (this.params.format === 'xml') {
-          this.parseXml(data);
+          return this.parseXml(data);
         }
       }
 
-      return data;
+      return null;
     } catch (error) {
       let message = 'Unknown Error';
       if (error instanceof Error) {
