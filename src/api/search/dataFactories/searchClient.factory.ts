@@ -1,4 +1,4 @@
-import { BookParseResponse, BookResponse } from '..';
+import { Response, BookParseResponse, BookResponse } from '..';
 
 const testDataFactory = (author: string): BookResponse[] => {
   return Array(2)
@@ -40,9 +40,15 @@ const resultJoinedDataFactory = (author: string): any => {
     }));
 };
 
-export const jsonTestData = {
-  shakespear: JSON.stringify(testDataFactory('shakespear')),
-  ben: JSON.stringify(testDataFactory('Ben'))
+export const jsonTestData: Response = {
+  author: {
+    shakespear: JSON.stringify(testDataFactory('shakespear')),
+    ben: JSON.stringify(testDataFactory('Ben'))
+  },
+  publisher: {
+    shakespear: JSON.stringify(testDataFactory('shakespear')),
+    ben: JSON.stringify(testDataFactory('Ben'))
+  }
 };
 
 export const shakespearResult = resultDataFactory('shakespear');

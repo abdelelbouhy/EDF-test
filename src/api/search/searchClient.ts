@@ -1,18 +1,18 @@
 import axios from 'axios';
 import { parseStringPromise } from 'xml2js';
-import { ConstructorParams, Book } from '.';
+import { ConstructorParams, Response } from '.';
 
-export class BookSearchClient {
+export class SearchClient {
   constructor(
     private baseUrl: string,
-    private authorName: string,
+    private getBy: string,
     private params: ConstructorParams,
     private joinKeyNames: boolean,
     private separator?: string
   ) {}
 
   private buildUrl = (): string => {
-    let url = `${this.baseUrl}${this.authorName}`;
+    let url = `${this.baseUrl}${this.getBy}`;
     Object.keys(this.params).forEach(
       (key) => (url += `&${key}=${this.params[key as keyof ConstructorParams]}`)
     );
@@ -21,47 +21,45 @@ export class BookSearchClient {
   };
 
   private joinKeys = (
-    tempObject: Book,
-    value: Book,
-    key: Book | string,
+    tempObject: Response,
+    value: Response,
+    key: Response | string,
     keyName = ''
   ) => {
     const tempValue = parseFloat(value as any);
     if (keyName === '') {
-      tempObject[key as keyof Book] = isNaN(tempValue) ? value : tempValue;
+      tempObject[key as keyof Response] = isNaN(tempValue) ? value : tempValue;
     } else {
-      if (key === '') {
-        tempObject[keyName as keyof Book] = isNaN(tempValue) ? value : tempValue;
-      } else {
-        tempObject[(keyName + this.separator + key) as keyof Book] = isNaN(tempValue)
-          ? value
-          : tempValue;
-      }
+      tempObject[(keyName + this.separator + key) as keyof Response] = isNaN(
+        tempValue
+      )
+        ? value
+        : tempValue;
     }
   };
 
-  private flattenBookResponse = (
-    currentObject: Book,
-    tempObject: Book,
+  private flattenJsonResponse = (
+    currentObject: Response,
+    tempObject: Response,
     keyName = ''
   ) => {
     for (let key in currentObject) {
-      let value: Book = currentObject[key as keyof Book];
+      let value: Response = currentObject[key as keyof Response];
 
       if (value?.constructor !== Object) {
         if (!this.joinKeyNames) {
-          tempObject[key as keyof Book] = value;
+          tempObject[key as keyof Response] = value;
         } else {
           this.joinKeys(tempObject, value, key, keyName);
         }
       } else {
         if (!this.joinKeyNames) {
-          this.flattenBookResponse(value, tempObject, key);
+          this.flattenJsonResponse(value, tempObject, key);
         } else {
           if (keyName === '') {
-            this.flattenBookResponse(value, tempObject, key);
+            this.flattenJsonResponse(value, tempObject, key);
           } else {
-            this.flattenBookResponse(
+            this.flattenJsonResponse(
               value,
               tempObject,
               keyName + this.separator + key
@@ -72,30 +70,30 @@ export class BookSearchClient {
     }
   };
 
-  private parseJson = (data: string): Book[] => {
+  private parseJson = (data: string): Response[] => {
     var json = JSON.parse(data);
 
-    return json.map((item: Book) => {
+    return json.map((item: Response) => {
       const tempObject = {};
 
-      this.flattenBookResponse(item, tempObject);
+      this.flattenJsonResponse(item, tempObject);
 
       return tempObject;
     });
   };
 
   private flattenXmlResponse = (
-    book: Book,
-    tempObject: Book,
+    response: Response,
+    tempObject: Response,
     parent: string,
     keyName = ''
   ) => {
-    for (let key in book) {
-      let value = book[key][0];
+    for (let key in response) {
+      let value = response[key][0];
       if (value?.constructor !== Object) {
         const tempValue = parseFloat(value);
         if (!this.joinKeyNames) {
-          tempObject[key as keyof Book] = isNaN(tempValue) ? value : tempValue;
+          tempObject[key as keyof Response] = isNaN(tempValue) ? value : tempValue;
         } else {
           this.joinKeys(tempObject, value, key, parent);
         }
@@ -119,18 +117,20 @@ export class BookSearchClient {
 
   private parseXml = async (data: string) => {
     const xmlDoc = await parseStringPromise(data);
-    const books: Book[] = Object.values(Object.values(xmlDoc)[0] as keyof Book)[0];
-    const parent = Object.keys(Object.values(xmlDoc)[0] as Book)[0];
+    const response: Response[] = Object.values(
+      Object.values(xmlDoc)[0] as keyof Response
+    )[0];
+    const parent = Object.keys(Object.values(xmlDoc)[0] as Response)[0];
 
-    return books.map((book: Book) => {
+    return response.map((res: Response) => {
       const tempObject = {};
-      this.flattenXmlResponse(book, tempObject, parent);
+      this.flattenXmlResponse(res, tempObject, parent);
 
       return tempObject;
     });
   };
 
-  public getBooksByAuthor = async (): Promise<Book[] | null | Error> => {
+  public fetch = async (): Promise<Response[] | null | Error> => {
     const url = this.buildUrl();
 
     try {

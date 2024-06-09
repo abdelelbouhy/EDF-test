@@ -2,7 +2,7 @@ export interface ConstructorParams {
   [name: string]: string | number;
 }
 
-export interface Book {
+export interface Response {
   [name: string]: any;
 }
 
